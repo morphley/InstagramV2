@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+
 
 class ViewController: UIViewController {
 
@@ -28,16 +30,35 @@ class ViewController: UIViewController {
         tf.backgroundColor = UIColor.init(white: 0, alpha: 0.03)
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 14)
+        tf.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
         return tf
     }()
 
+    @objc func handleTextInputChange(){
+        let isFormValid = emailTextField.text?.characters.count ?? 0 > 0 && usernameTextField.text?.characters.count ?? 0 > 0 &&  passwordTextField.text?.characters.count ?? 0 > 0  // either true or false
+        
+        if isFormValid{
+            
+            signUpButton.isEnabled = true
+            signUpButton.backgroundColor = UIColor.rgb(red: 17, green: 154, blue: 237)
+            
+        } else {
+            
+            signUpButton.isEnabled = false
+            signUpButton.backgroundColor = UIColor.rgb(red: 149, green: 204, blue: 244)
+            
+        }
+    }
+
     
+    // Listening for changes !!
     let usernameTextField: UITextField = {
         let tf = UITextField()
         tf.placeholder = "Username"
         tf.backgroundColor = UIColor.init(white: 0, alpha: 0.03)
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 14)
+        tf.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
         return tf
     }()
     
@@ -49,6 +70,7 @@ class ViewController: UIViewController {
         tf.backgroundColor = UIColor.init(white: 0, alpha: 0.03)
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 14)
+        tf.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
         return tf
     }()
     
@@ -61,42 +83,81 @@ class ViewController: UIViewController {
         btn.layer.cornerRadius = 5
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         btn.setTitleColor(.white, for: .normal)
+        btn.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
+        btn.isEnabled = false
         return btn
-        
     }()
     
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
     
-        view.addSubview(plusPhotoButton)
-        view.addSubview(emailTextField)
+    @objc func handleSignUp() {
+
+
         
-        plusPhotoButton.anchor(top: view.topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 40, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 140, height: 140)
-  
-        plusPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        setupInputFields()
+        guard let email = emailTextField.text, email.characters.count > 0 else { return }
+        guard let username = usernameTextField.text, username.characters.count > 0 else { return }
+        guard let password = passwordTextField.text, password.characters.count > 0 else { return }
+
+        // you get user and  possible error passed back
+        Auth.auth().createUser(withEmail: email, password: password) { (user: User?, error: Error?) in
+            
+            if let err = error {
+                
+                print("Failed to create User: " , err.localizedDescription )
+            }
+            
+            print("Succesfully created User: " , user?.uid ?? "")
+        }
+
  
     }
     
     
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+      
+        view.addSubview(plusPhotoButton)
+        view.addSubview(emailTextField)
+        plusPhotoButton.anchor(top: view.topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 40, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 140, height: 140)
+        plusPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+      
+        setupInputFields()
+      
+    }
+    
+    
+    func changeViewColor(){
+ 
+    }
+    
+    
     
     fileprivate func setupInputFields(){
-      
-        
+    
         let stackView =  UIStackView(arrangedSubviews: [emailTextField, usernameTextField, passwordTextField,signUpButton])
         stackView.distribution = .fillEqually
         stackView.axis = .vertical
         stackView.spacing = 10
         view.addSubview(stackView)
-        
-
+    
         stackView.anchor(top: plusPhotoButton.bottomAnchor, left: view.leftAnchor, bottom: nil , right: view.rightAnchor, paddingTop: 20, paddingLeft: 40, paddingBottom: 0, paddingRight: 40, width: 0, height: 200)
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 extension UIView{
     
@@ -142,7 +203,17 @@ extension UIView{
 
 
 
+extension CGFloat {
+    static var random: CGFloat {
+        return CGFloat(arc4random()) / CGFloat(UInt32.max)
+    }
+}
 
+extension UIColor {
+    static var random: UIColor {
+        return UIColor(red: .random, green: .random, blue: .random, alpha: 1.0)
+    }
+}
 
 
 
