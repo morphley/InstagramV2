@@ -188,7 +188,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = UIColor.white
       
         view.addSubview(plusPhotoButton)
         view.addSubview(emailTextField)
