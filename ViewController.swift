@@ -128,7 +128,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         guard let password = passwordTextField.text, password.characters.count > 0 else { return }
 
         // you get user and  possible error passed back
-        Auth.auth().createUser(withEmail: email, password: password) { (user: User?, error: Error?) in
+        Auth.auth().createUser(withEmail: email, password: password) { (user, error: Error?) in
             
             if let err = error {
                 print("Failed to create User: " , err.localizedDescription )
