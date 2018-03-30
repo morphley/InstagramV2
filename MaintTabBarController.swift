@@ -7,12 +7,29 @@
 //
 
 import UIKit
+import Firebase
 
 class MainTabBarController: UITabBarController{
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // show LoginController if not logged in
+        
+        //wait until maintabbar controller is inside the ui then we present it
+        
+        
+        if Auth.auth().currentUser == nil {
+            //show if not logged in
+            DispatchQueue.main.async {
+                let loginController = LoginController()
+                let navController = UINavigationController(rootViewController: loginController)
+                self.present(navController, animated: true, completion: nil)
+            }
+            
+            return
+        }
         
         view.backgroundColor = UIColor.blue
    
